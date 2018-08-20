@@ -1,0 +1,59 @@
+--- #collect for triage
+- hosts: '{{ node }}'
+  gather_facts: no 
+  become: yes
+  become_method: sudo
+  vars:
+          destination_dir: "./collected_support_bundles/"
+
+  tasks:
+          #- name: create folder locally
+          #file: path={{destination_dir}} state=directory recurse=yes mode-0777
+          #delegate_to: localhost
+
+  - name: timestamp_start
+    shell: '/bin/echo "the time is now " && /bin/date' 
+    register: start_result
+    #- debug: msg={{ start_result.stdout }}
+  - local_action: lineinfile line={{ start_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
+
+  - name: print_bridge_table
+    shell: '/sbin/bridge fdb show'
+    register: bridge_result
+    #- debug: msg={{ bridge_result.stdout }}
+  - local_action: lineinfile line={{ bridge_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
+    tags: verify 
+
+  - name: print_arp_table
+    shell: '/sbin/ip neigh show'
+    register: arp_result
+    #- debug: msg={{ arp_result.stdout }}
+  - local_action: lineinfile line={{ arp_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
+    tags: verify 
+
+  - name: print_evpn.mac_table
+    shell: '/usr/bin/vtysh -c "show evpn mac vni 10032"'
+    register: evpn.mac_result
+    #- debug: msg={{ evpn.mac_result.stdout }}
+  - local_action: lineinfile line={{ evpn.mac_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
+    tags: verify 
+
+  - name: print_evpn.route_table
+    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn route"'
+    register: evpn.route_result
+    #- debug: msg={{ evpn.route_result.stdout }}
+  - local_action: lineinfile line={{ evpn.route_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
+    tags: verify 
+
+  - name: print_evpn.overlay_table
+    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn overlay all"'
+    register: evpn.overlay_result
+    #- debug: msg={{ evpn.overlay_result.stdout }}
+  - local_action: lineinfile line={{ evpn.overlay_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
+    tags: verify 
+
+  - name: timestamp_end
+    shell: '/bin/echo "the time is now " && /bin/date' 
+    register: end_result
+    #- debug: msg={{ end_result.stdout }}
+  - local_action: lineinfile line={{ end_result.stdout }} insertafter=EOF dest=/var/log/{{ inventory_hostname }}
