@@ -1,8 +1,20 @@
 --- #collect for triage
 - hosts: '{{ node }}'
+  remote_user: cumulus
   gather_facts: no 
   become: yes
   become_method: sudo
+  vars:
+          ansible_user: "cumulus"
+          ansible_ssh_pass: "CumulusLinux!"
+          ansible_become_pass: "CumulusLinux!"
+
+          #          destination_dir: "/var/cumulus-collected/"
+
+  tasks:
+          #  - name: create folder locally
+          #    file: path={{destination_dir}} state=directory recurse=yes mode-0777
+          #    delegate_to: localhost
 
   - name: timestamp_start
     shell: '/bin/echo "the time is now " && /bin/date' 
@@ -21,22 +33,22 @@
   - local_action: lineinfile line={{ arp_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
     tags: verify 
 
-  - name: print_evpn.mac_table
+  - name: print_evpn_mac_table
     shell: '/usr/bin/vtysh -c "show evpn mac vni 10032"'
-    register: evpn.mac_result
-  - local_action: lineinfile line={{ evpn.mac_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+    register: evpn_mac_result
+  - local_action: lineinfile line={{ evpn_mac_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
     tags: verify 
 
-  - name: print_evpn.route_table
+  - name: print_evpn_route_table
     shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn route"'
-    register: evpn.route_result
-  - local_action: lineinfile line={{ evpn.route_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
-    tags: verify 
+    register: evpn_route_result
+  - local_action: lineinfile line={{ evpn_route_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+    #    tags: verify 
 
-  - name: print_evpn.overlay_table
-    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn overlay all"'
-    register: evpn.overlay_result
-  - local_action: lineinfile line={{ evpn.overlay_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+  - name: print_evpn_overlay_table
+    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn all overlay"'
+    register: evpn_overlay_result
+  - local_action: lineinfile line={{ evpn_overlay_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
     tags: verify 
 
   - name: timestamp_end
