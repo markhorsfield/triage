@@ -4,14 +4,8 @@
   gather_facts: yes 
   become: yes
   become_method: sudo
-  vars:
-          #          ansible_user: "cumulus"
-          #          ansible_ssh_pass: "CumulusLinux!"
-          #          ansible_become_pass: "CumulusLinux!"
+
   tasks:
-          #  - name: Ansible date fact
-          #    debug: 
-          #      var=ansible_date_time.iso8601_basic
 
   - name: print_bridge_table
     shell: '/sbin/bridge fdb show'
