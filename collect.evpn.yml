@@ -1,9 +1,9 @@
 --- #collect for triage
 - hosts: '{{ node }}' 
   remote_user: root 
-  gather_facts: yes 
-  become: yes
-  become_method: sudo
+  gather_facts: no 
+#  become: yes
+#  become_method: sudo
 
   tasks:
 
