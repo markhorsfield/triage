@@ -1,57 +1,74 @@
 --- #collect for triage
-- hosts: '{{ node }}'
-  remote_user: cumulus
-  gather_facts: no 
+- hosts: '{{ node }}' 
+  remote_user: root 
+  gather_facts: yes 
   become: yes
   become_method: sudo
   vars:
-          ansible_user: "cumulus"
-          ansible_ssh_pass: "CumulusLinux!"
-          ansible_become_pass: "CumulusLinux!"
-
-          #          destination_dir: "/var/cumulus-collected/"
-
+          #          ansible_user: "cumulus"
+          #          ansible_ssh_pass: "CumulusLinux!"
+          #          ansible_become_pass: "CumulusLinux!"
   tasks:
-          #  - name: create folder locally
-          #    file: path={{destination_dir}} state=directory recurse=yes mode-0777
-          #    delegate_to: localhost
-
-  - name: timestamp_start
-    shell: '/bin/echo "the time is now " && /bin/date' 
-    register: start_result
-  - local_action: lineinfile line={{ start_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+          #  - name: Ansible date fact
+          #    debug: 
+          #      var=ansible_date_time.iso8601_basic
 
   - name: print_bridge_table
     shell: '/sbin/bridge fdb show'
     register: bridge_result
-  - local_action: lineinfile line={{ bridge_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+  - local_action: lineinfile line={{ bridge_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/bridge_result.stdout
     tags: verify 
+
+  - name: timestamp
+    shell: '/bin/date' 
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/bridge_result.stdout
+    tags: date
 
   - name: print_arp_table
     shell: '/sbin/ip neigh show'
     register: arp_result
-  - local_action: lineinfile line={{ arp_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+  - local_action: lineinfile line={{ arp_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/arp_result.stdout
     tags: verify 
 
-  - name: print_evpn_mac_table
+  - name: timestamp
+    shell: '/bin/date' 
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/arp_result.stdout
+    tags: date
+
+  - name: print_evpn.mac_table
     shell: '/usr/bin/vtysh -c "show evpn mac vni 10032"'
     register: evpn_mac_result
-  - local_action: lineinfile line={{ evpn_mac_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+  - local_action: lineinfile line={{ evpn_mac_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_mac_result.stdout
     tags: verify 
 
-  - name: print_evpn_route_table
+  - name: timestamp
+    shell: '/bin/date' 
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_mac_result.stdout
+    tags: date
+
+  - name: print_evpn.route_table
     shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn route"'
     register: evpn_route_result
-  - local_action: lineinfile line={{ evpn_route_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
-    #    tags: verify 
-
-  - name: print_evpn_overlay_table
-    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn all overlay"'
-    register: evpn_overlay_result
-  - local_action: lineinfile line={{ evpn_overlay_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+  - local_action: lineinfile line={{ evpn_route_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_route_result.stdout
     tags: verify 
 
-  - name: timestamp_end
-    shell: '/bin/echo "the time is now " && /bin/date' 
-    register: end_result
-  - local_action: lineinfile line={{ end_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}
+  - name: timestamp
+    shell: '/bin/date' 
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_route_result.stdout
+    tags: date
+
+  - name: print_evpn.overlay_table
+    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn all overlay"'
+    register: evpn_overlay_result
+  - local_action: lineinfile line={{ evpn_overlay_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_overlay_result.stdout
+    tags: verify 
+
+  - name: timestamp
+    shell: '/bin/date' 
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_overlay_result.stdout
+    tags: date
