@@ -1,0 +1,12 @@
+---
+  - name: print_evpn.route_table
+    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn route"'
+    register: evpn_route_result
+  - local_action: lineinfile line={{ evpn_route_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_route_result.stdout
+    tags: verify
+
+  - name: timestamp
+    shell: '/bin/date'
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_route_result.stdout
+    tags: date

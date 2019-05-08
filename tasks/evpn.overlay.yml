@@ -1,0 +1,12 @@
+---
+  - name: print_evpn.overlay_table
+    shell: '/usr/bin/vtysh -c "show bgp l2vpn evpn all overlay"'
+    register: evpn_overlay_result
+  - local_action: lineinfile line={{ evpn_overlay_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_overlay_result.stdout
+    tags: verify
+
+  - name: timestamp
+    shell: '/bin/date'
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn_overlay_result.stdout
+    tags: date

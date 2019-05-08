@@ -1,0 +1,20 @@
+---
+  - name: create directory
+    local_action:
+      module: file
+      path: "/var/cumulus-collected/{{ inventory_hostname }}"
+      mode: 0777
+      state: directory
+
+  - name: create empty files
+    local_action:
+      module: file
+      path: "{{ item.dest }}"
+      mode: "{{ item.mode }}"
+      state: touch
+    with_items:
+      - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/bridge_result.stdout", mode: '0777' }
+      - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/arp_result.stdout", mode: '0777' }
+      - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_mac_result.stdout", mode: '0777' }
+      - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_route_result.stdout", mode: '0777' }
+      - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_overlay_result.stdout", mode: '0777' }

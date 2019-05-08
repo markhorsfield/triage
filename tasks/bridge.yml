@@ -1,0 +1,12 @@
+---
+  - name: print_bridge_table
+    shell: '/sbin/bridge fdb show'
+    register: bridge_result
+  - local_action: lineinfile line={{ bridge_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/bridge_result.stdout
+    tags: verify
+
+  - name: timestamp
+    shell: '/bin/date'
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/bridge_result.stdout
+    tags: date

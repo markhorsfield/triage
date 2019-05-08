@@ -1,0 +1,12 @@
+---
+  - name: print_arp_table
+    shell: '/sbin/ip neigh show'
+    register: arp_result
+  - local_action: lineinfile line={{ arp_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/arp_result.stdout
+    tags: verify
+
+  - name: timestamp
+    shell: '/bin/date'
+    register: date_result
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/arp_result.stdout
+    tags: date
