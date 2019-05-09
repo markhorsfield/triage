@@ -1,12 +1,12 @@
 ---
   - name: print_evpn.arp_cache
     shell: '/usr/bin/vtysh -c "show evpn arp-cache vni all"'
-    register: evpn.arp_cache_result
-  - local_action: lineinfile line={{ evpn.arp_cache_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn.arp_cache_result.stdout
+    register: evpn.arp.result
+  - local_action: lineinfile line={{ evpn.arp.result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn.arp.result.stdout
     tags: verify
 
   - name: timestamp
     shell: '/bin/date'
     register: date_result
-  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn.arp_cache_result.stdout
+  - local_action: lineinfile line={{ date_result.stdout }} insertafter=EOF dest=/var/cumulus-collected/{{ inventory_hostname }}/evpn.arp.result.stdout
     tags: date
