@@ -16,5 +16,6 @@
       - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/bridge_result.stdout", mode: '0777' }
       - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/arp_result.stdout", mode: '0777' }
       - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_mac_result.stdout", mode: '0777' }
+      - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_arp_result.stdout", mode: '0777' }
       - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_route_result.stdout", mode: '0777' }
       - { dest: "/var/cumulus-collected/{{ inventory_hostname }}/evpn_overlay_result.stdout", mode: '0777' }
