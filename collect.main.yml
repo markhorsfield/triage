@@ -10,5 +10,6 @@
     - import_tasks: tasks/bridge.yml
     - import_tasks: tasks/arp.yml
     - import_tasks: tasks/evpn.mac.yml
+    - import_tasks: tasks/evpn.arp.yml
     - import_tasks: tasks/evpn.route.yml
     - import_tasks: tasks/evpn.overlay.yml
